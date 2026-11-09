@@ -1,13 +1,2 @@
-
-
-    Directory: C:\Users\Michael\Desktop\prova.github.com
-
-
-Mode                 LastWriteTime         Length Name                                                                 
-----                 -------------         ------ ----                                                                 
--a----        09/11/2026     16:44              5 comando.txt                                                          
--a----        09/11/2026     16:44            796 file.txt                                                             
--a----        09/11/2026     16:42          13998 index.html                                                           
--a----        09/11/2026     16:42             23 README.md                                                            
-
-
+comando.txt		    file.txt   index.html
+evil-calculator-driver.jar  fonts.txt  README.md
