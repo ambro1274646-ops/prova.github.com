@@ -1,1 +1,13 @@
-desktop-v3mimdq\michael
+
+
+    Directory: C:\Users\Michael\Desktop\prova.github.com
+
+
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+-a----        09/11/2026     16:28              5 comando.txt                                                          
+-a----        09/11/2026     16:28             25 file.txt                                                             
+-a----        09/11/2026     16:28          13998 index.html                                                           
+-a----        09/11/2026     16:28             23 README.md                                                            
+
+
