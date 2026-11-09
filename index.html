@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Luce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}
+a:focus-visible{outline:3px solid #4F8BFF;outline-offset:4px}
+.navlink{text-decoration:none;position:relative}
+.navlink::after{content:"";position:absolute;left:0;right:0;bottom:8px;height:2px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.navlink:hover::after{transform:scaleX(1)}
+.btn{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(16,20,24,.2)}
+.card{transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s}
+.card:hover{transform:translateY(-6px);border-color:#101418}
+.tile .shape{transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.tile:hover .shape{transform:scale(1.14) rotate(6deg)}
+.rise{animation:rise .9s cubic-bezier(.22,1,.36,1) backwards}
+.d1{animation-delay:.05s}
+.d2{animation-delay:.18s}
+.d3{animation-delay:.3s}
+.d4{animation-delay:.42s}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.spin{transform-origin:200px 200px;animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{transform-origin:200px 200px;animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.float{animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-14px)}}
+.track{display:flex;width:max-content;animation:slide 36s linear infinite}
+@keyframes slide{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+.rise,.spin,.pulse,.float,.track{animation:none}
+.card,.btn,.tile .shape,.navlink::after{transition:none}
+}
+</style>
+</head>
+<body>
+<div id="top" style="font-family: 'DM Sans', system-ui, sans-serif; color: #101418; background: #F3F5F2">
+
+<header style="max-width: 1200px; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<a href="#top" style="display: flex; align-items: center; gap: 10px; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.02em; text-decoration: none; min-height: 44px">
+<span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; background: #F0A030"></span>
+Atelier Luce
+</a>
+<nav aria-label="Principale" style="display: flex; flex-wrap: wrap; gap: 28px; font-weight: 500">
+<a class="navlink" href="#servizi" style="display: flex; align-items: center; min-height: 44px">Servizi</a>
+<a class="navlink" href="#lavori" style="display: flex; align-items: center; min-height: 44px">Lavori</a>
+<a class="navlink" href="#contatti" style="display: flex; align-items: center; min-height: 44px">Contatti</a>
+</nav>
+</header>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 48px 24px 88px; display: flex; flex-wrap: wrap; align-items: center; gap: 48px">
+<div style="flex: 1 1 480px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px">
+<p class="rise d1" style="margin: 0; font-weight: 600; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #4A545C">Studio di design e siti web</p>
+<h1 class="rise d2" style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: clamp(44px, 7vw, 92px); line-height: 1; letter-spacing: -0.035em; text-wrap: balance">Siti web che si capiscono al primo sguardo.</h1>
+<p class="rise d3" style="margin: 0; max-width: 52ch; font-size: 20px; line-height: 1.55; color: #3A444C; text-wrap: pretty">Progettiamo identità visive e pagine web per piccole attività. Poche parole, immagini chiare, nessun giro inutile.</p>
+<div class="rise d4" style="display: flex; flex-wrap: wrap; gap: 16px">
+<a class="btn" href="#contatti" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #F0A030; color: #101418; font-weight: 600; text-decoration: none">Parlaci del tuo progetto</a>
+<a class="btn" href="#lavori" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; border: 2px solid #101418; color: #101418; font-weight: 600; text-decoration: none">Guarda i lavori</a>
+</div>
+</div>
+<div class="rise d3" style="flex: 1 1 320px; display: flex; justify-content: center">
+<svg viewBox="0 0 400 400" aria-hidden="true" style="width: 100%; max-width: 460px; height: auto; display: block">
+<circle class="spin" cx="200" cy="200" r="180" fill="none" stroke="#101418" stroke-width="2" stroke-dasharray="3 14" stroke-linecap="round"></circle>
+<circle class="pulse" cx="200" cy="200" r="118" fill="#F0A030"></circle>
+<g class="float"><circle cx="318" cy="96" r="30" fill="#5B8CFF"></circle></g>
+<rect class="float" x="62" y="262" width="64" height="64" rx="14" fill="#101418" style="animation-delay: -3s"></rect>
+</svg>
+</div>
+</section>
+
+<div aria-hidden="true" style="background: #101418; color: #F3F5F2; overflow: hidden; padding: 22px 0">
+<div class="track">
+<div style="display: flex; align-items: center; gap: 48px; padding-right: 48px; white-space: nowrap; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 28px">
+<span>Identità visiva</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Siti web</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Contenuti</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Identità visiva</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Siti web</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Contenuti</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+</div>
+<div style="display: flex; align-items: center; gap: 48px; padding-right: 48px; white-space: nowrap; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 28px">
+<span>Identità visiva</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Siti web</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Contenuti</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Identità visiva</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Siti web</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+<span>Contenuti</span><span style="flex: none; width: 12px; height: 12px; border-radius: 50%; background: #F0A030"></span>
+</div>
+</div>
+</div>
+
+<section id="servizi" style="max-width: 1200px; margin: 0 auto; padding: 96px 24px; display: flex; flex-direction: column; gap: 48px">
+<h2 style="margin: 0; max-width: 16ch; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: clamp(34px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance">Tre cose, fatte con cura.</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 24px">
+<article class="card" style="display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid rgba(16, 20, 24, 0.2); border-radius: 24px; background: #FAFBF9">
+<div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; background: #F0A030"></div>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em">Identità visiva</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3A444C">Nome, logo, colori e caratteri che funzionano su un biglietto da visita come su un'insegna.</p>
+</article>
+<article class="card" style="display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid rgba(16, 20, 24, 0.2); border-radius: 24px; background: #FAFBF9">
+<div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 12px; background: #5B8CFF"></div>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em">Siti web</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3A444C">Pagine veloci, leggibili da telefono e facili da aggiornare. Ogni sito parte da una domanda: cosa deve fare chi lo visita?</p>
+</article>
+<article class="card" style="display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid rgba(16, 20, 24, 0.2); border-radius: 24px; background: #FAFBF9">
+<div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 44px 44px 0 0; background: #101418"></div>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em">Contenuti</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3A444C">Testi e fotografie che raccontano chi siete in poche righe, senza giri di parole.</p>
+</article>
+</div>
+</section>
+
+<section id="lavori" style="background: #101418; color: #F3F5F2">
+<div style="max-width: 1200px; margin: 0 auto; padding: 96px 24px; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: clamp(34px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.03em">Lavori recenti</h2>
+<p style="margin: 0; max-width: 40ch; line-height: 1.55; color: #B4BDC3">Qui compaiono i tuoi progetti. Sostituisci i segnaposto con nome, tipo di lavoro e anno.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 32px">
+<article class="tile" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; justify-content: center; height: 280px; border-radius: 24px; overflow: hidden; background: #F0A030">
+<div class="shape" aria-hidden="true" style="width: 120px; height: 120px; border-radius: 50%; background: #101418"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 22px">[NOME PROGETTO]</h3>
+<p style="margin: 0; color: #B4BDC3">[TIPO DI LAVORO, ANNO]</p>
+</div>
+</article>
+<article class="tile" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; justify-content: center; height: 280px; border-radius: 24px; overflow: hidden; background: #5B8CFF">
+<div class="shape" aria-hidden="true" style="width: 120px; height: 120px; border-radius: 24px; background: #F3F5F2"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 22px">[NOME PROGETTO]</h3>
+<p style="margin: 0; color: #B4BDC3">[TIPO DI LAVORO, ANNO]</p>
+</div>
+</article>
+<article class="tile" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; justify-content: center; height: 280px; border-radius: 24px; overflow: hidden; background: #F3F5F2">
+<div class="shape" aria-hidden="true" style="width: 140px; height: 70px; border-radius: 140px 140px 0 0; background: #101418"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 22px">[NOME PROGETTO]</h3>
+<p style="margin: 0; color: #B4BDC3">[TIPO DI LAVORO, ANNO]</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<section id="contatti" style="max-width: 1200px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px">
+<h2 style="margin: 0; max-width: 14ch; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 700; font-size: clamp(40px, 7vw, 96px); line-height: 1; letter-spacing: -0.035em; text-wrap: balance">Hai un progetto in mente?</h2>
+<p style="margin: 0; max-width: 52ch; font-size: 20px; line-height: 1.55; color: #3A444C; text-wrap: pretty">Raccontaci in due righe di cosa hai bisogno. Rispondiamo entro [TEMPO DI RISPOSTA].</p>
+<a class="btn" href="mailto:ciao@atelierluce.example" style="display: inline-flex; align-items: center; min-height: 56px; padding: 0 32px; border-radius: 999px; background: #F0A030; color: #101418; font-weight: 600; font-size: 18px; text-decoration: none">ciao@atelierluce.example</a>
+</section>
+
+<footer style="border-top: 1px solid rgba(16, 20, 24, 0.2)">
+<div style="max-width: 1200px; margin: 0 auto; padding: 32px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: #4A545C; font-size: 15px">
+<span>© Atelier Luce</span>
+<span>Pagina dimostrativa: sostituisci nome, testi e contatti con i tuoi.</span>
+</div>
+</footer>
+
+</div>
+</body>
+</html>
