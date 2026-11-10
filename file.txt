@@ -1,14 +1,1 @@
-Brother Common Installer
-GestionalePublish2026
-kali-linux-2026.3-virtualbox-amd64
-lib
-prova.github.com
-comando.txt
-Controllore Centrale di Impianto.docx
-debug.log
-Dropbox.lnk
-Firefox.exe
-Microsoft Teams.lnk
-SenderConfig.xml
-SenderConfig2.xml
-Visual Studio Code.lnk
+anon  chiave  chiave.pub  file	htb  pentest  pocs  prova.github.com  vpn
