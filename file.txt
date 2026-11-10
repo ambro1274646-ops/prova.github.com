@@ -1,6 +1,16 @@
-comando.txt
-evil-calculator-driver.jar
-file.txt
-fonts.odb
-index.html
-README.md
+Brother Common Installer
+curl
+GestionalePublish2026
+kali-linux-2026.3-virtualbox-amd64
+lib
+prova.github.com
+prove
+comando.ps1
+Controllore Centrale di Impianto.docx
+Dropbox.lnk
+Firefox.exe
+Microsoft Teams.lnk
+prova.txt
+SenderConfig.xml
+SenderConfig2.xml
+Visual Studio Code.lnk
