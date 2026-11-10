@@ -3,8 +3,8 @@ GestionalePublish2026
 kali-linux-2026.3-virtualbox-amd64
 lib
 prova.github.com
-comando.ps1
 Controllore Centrale di Impianto.docx
+debug_driver.txt
 Dropbox.lnk
 Firefox.exe
 Microsoft Teams.lnk
