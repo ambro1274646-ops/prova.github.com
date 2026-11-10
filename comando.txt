@@ -1,1 +1,1 @@
-cd preventivi; dir
+pwd
