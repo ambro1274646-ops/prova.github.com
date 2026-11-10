@@ -1,12 +1,1 @@
-inetpub
-msys64
-PerfLogs
-preventivi
-progetto_ollama
-Program Files
-Program Files (x86)
-SolarnetDati
-test
-Users
-Windows
-xampp
+desktop-v3mimdq\michael
