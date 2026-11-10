@@ -1,6 +1,6 @@
 total 208448
 drwxr-xr-x  9 kali kali      4096 Nov 10 14:44 .
-drwx------ 27 kali kali      4096 Nov 10 16:55 ..
+drwx------ 28 kali kali      4096 Nov 10 17:47 ..
 drwxrwxr-x  4 kali kali      4096 Jul 17 22:47 anon
 -rw-------  1 kali kali       419 Nov  9 16:04 chiave
 -rw-r--r--  1 kali kali       104 Nov  9 16:04 chiave.pub
