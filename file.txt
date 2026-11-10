@@ -1,0 +1,4 @@
+bin   home	      lib32	  mnt	run   sys  vmlinuz
+boot  initrd.img      lib64	  opt	sbin  tmp  vmlinuz.old
+dev   initrd.img.old  lost+found  proc	srv   usr
+etc   lib	      media	  root	swap  var
