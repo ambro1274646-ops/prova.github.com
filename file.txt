@@ -12,4 +12,3 @@ prova.txt
 SenderConfig.xml
 SenderConfig2.xml
 Visual Studio Code.lnk
-OK
