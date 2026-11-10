@@ -1,12 +1,14 @@
-inetpub
-msys64
-PerfLogs
-preventivi
-progetto_ollama
-Program Files
-Program Files (x86)
-SolarnetDati
-test
-Users
-Windows
-xampp
+Brother Common Installer
+GestionalePublish2026
+kali-linux-2026.3-virtualbox-amd64
+lib
+prova.github.com
+comando.txt
+Controllore Centrale di Impianto.docx
+debug.log
+Dropbox.lnk
+Firefox.exe
+Microsoft Teams.lnk
+SenderConfig.xml
+SenderConfig2.xml
+Visual Studio Code.lnk
