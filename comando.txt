@@ -1,1 +1,1 @@
-ip
+cat /etc/resolv.conf
