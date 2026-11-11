@@ -2,3 +2,6 @@ total 12
 drwx------  2 root root 4096 Nov 12 00:24 .
 drwx------ 17 root root 4096 Nov 12 00:29 ..
 -rw-------  1 root root   49 Nov 12 00:24 config
+[default]
+s3 =
+  payload_signing_enabled = false
