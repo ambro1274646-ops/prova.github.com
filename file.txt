@@ -1,15 +1,4 @@
-total 208448
-drwxr-xr-x  9 kali kali      4096 Nov 10 14:44 .
-drwx------ 28 kali kali      4096 Nov 10 18:45 ..
-drwxrwxr-x  4 kali kali      4096 Jul 17 22:47 anon
--rw-------  1 kali kali       419 Nov  9 16:04 chiave
--rw-r--r--  1 kali kali       104 Nov  9 16:04 chiave.pub
--rw-rw-r--  1 kali kali      1202 Nov  9 16:17 file
-drwxrwxr-x  3 kali kali      4096 Nov  8 10:26 htb
-drwxr-xr-x  4 kali kali      4096 Oct 29  2024 LibreOffice_24.2.7.2_Linux_x86-64_deb
--rw-rw-r--  1 kali kali 213396806 Oct 30  2024 LibreOffice_24.2.7.2_Linux_x86-64_deb.tar.gz
-drwxrwxr-x  4 kali kali      4096 Oct  7 04:34 pentest
-drwxrwxr-x  4 kali kali      4096 Nov 10 12:28 pocs
-drwxrwxr-x  3 kali kali      4096 Nov 10 17:42 prova.github.com
-drwxrwxr-x  2 kali kali      4096 Nov  7 12:18 vpn
--rw-rw-r--  1 kali kali       684 Nov 10 14:31 wget-log
+total 12
+drwxrwxr-x  3 kali kali 4096 Nov 11 13:01 .
+drwx------ 29 kali kali 4096 Nov 11 13:01 ..
+drwxrwxr-x  3 kali kali 4096 Nov 11 13:01 fonts
