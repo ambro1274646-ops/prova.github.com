@@ -1,19 +1,15 @@
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
-Reading package lists...
-Building dependency tree...
-Reading state information...
-17 packages can be upgraded. Run 'apt list --upgradable' to see them.
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Reading package lists...
-Building dependency tree...
-Reading state information...
-iproute2 is already the newest version (6.1.0-1ubuntu6.4).
-0 upgraded, 0 newly installed, 0 to remove and 17 not upgraded.
+Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }
+       ip [ -force ] -batch filename
+where  OBJECT := { address | addrlabel | amt | fou | help | ila | ioam | l2tp |
+                   link | macsec | maddress | monitor | mptcp | mroute | mrule |
+                   neighbor | neighbour | netconf | netns | nexthop | ntable |
+                   ntbl | route | rule | sr | tap | tcpmetrics |
+                   token | tunnel | tuntap | vrf | xfrm }
+       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |
+                    -h[uman-readable] | -iec | -j[son] | -p[retty] |
+                    -f[amily] { inet | inet6 | mpls | bridge | link } |
+                    -4 | -6 | -M | -B | -0 |
+                    -l[oops] { maximum-addr-flush-attempts } | -br[ief] |
+                    -o[neline] | -t[imestamp] | -ts[hort] | -b[atch] [filename] |
+                    -rc[vbuf] [size] | -n[etns] name | -N[umeric] | -a[ll] |
+                    -c[olor]}
