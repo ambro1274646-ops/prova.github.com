@@ -17,7 +17,7 @@ drwxr-xr-x  6 root root  4096 Nov 12 00:24 mnt
 drwxr-xr-x  4 root root  4096 Nov  6 07:04 nix
 drwxr-xr-x  2 root root  4096 Nov 12 00:24 old_root
 drwxr-xr-x 25 root root  4096 Nov 12 00:24 opt
-dr-xr-xr-x 78 root root     0 Nov 11 02:06 proc
+dr-xr-xr-x 81 root root     0 Nov 11 02:06 proc
 drwx------ 17 root root  4096 Nov 12 00:29 root
 drwxr-xr-x 12 root root  4096 Nov 12 00:24 run
 lrwxrwxrwx  1 root root     8 Apr 22  2024 sbin -> usr/sbin
