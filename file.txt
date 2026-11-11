@@ -1,4 +1,1 @@
-total 12
-drwxrwxr-x  3 kali kali 4096 Nov 11 13:01 .
-drwx------ 29 kali kali 4096 Nov 11 13:01 ..
-drwxrwxr-x  3 kali kali 4096 Nov 11 13:06 fonts
+bash: line 1: cd: too many arguments
