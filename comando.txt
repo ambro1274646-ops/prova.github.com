@@ -1,1 +1,1 @@
-cd ..; cd .aws; ls -la
+cd ..; cd .aws; ls -la; cat config
