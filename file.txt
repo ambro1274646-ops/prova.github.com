@@ -1,1 +1,1 @@
-root
+bash: line 1: ip: command not found
