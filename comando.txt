@@ -1,1 +1,1 @@
-cat /etc/resolv.conf
+ss -tulnp
