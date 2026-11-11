@@ -16,7 +16,7 @@ drwxr-xr-x 26 kali kali     4096 Nov 10 17:01 .config
 drwxr-xr-x  9 kali kali     4096 Nov 10 14:44 Desktop
 -rw-r--r--  1 kali kali       35 Jun 22 18:58 .dmrc
 drwxr-xr-x  2 kali kali     4096 Jun 22 18:58 Documents
-drwxr-xr-x  2 kali kali     4096 Nov 11 11:10 Downloads
+drwxr-xr-x  2 kali kali     4096 Nov 11 13:23 Downloads
 -rw-r--r--  1 kali kali    11759 Mar 20  2026 .face
 lrwxrwxrwx  1 kali kali        5 Mar 20  2026 .face.icon -> .face
 -rw-rw-r--  1 kali kali       64 Nov  9 16:20 .gitconfig
@@ -52,7 +52,7 @@ drwxr-xr-x  2 kali kali     4096 Jun 22 18:58 Templates
 drwxr-xr-x  2 kali kali     4096 Jun 22 18:58 Videos
 -rw-------  1 kali kali     3519 Aug 16 12:06 .viminfo
 -rw-------  1 kali kali       49 Nov 11 03:23 .Xauthority
--rw-------  1 kali kali    59159 Nov 11 12:56 .xsession-errors
+-rw-------  1 kali kali    61199 Nov 11 13:23 .xsession-errors
 -rw-------  1 kali kali    33136 Nov 10 18:45 .xsession-errors.old
 -rw-r--r--  1 kali kali      336 Mar 20  2026 .zprofile
 -rw-------  1 kali kali    71126 Nov 11 08:27 .zsh_history
