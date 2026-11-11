@@ -1,1 +1,1 @@
-pwd
+cd ..; ls -la ; cd /home/claude ; ls
