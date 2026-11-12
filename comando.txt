@@ -1,1 +1,1 @@
-whoami; id; ls -la; cd /; ls -la
+whoami
