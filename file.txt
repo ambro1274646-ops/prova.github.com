@@ -29,7 +29,7 @@ drwxr-xr-x 12 root root  4096 Nov 12 10:47 run
 lrwxrwxrwx  1 root root     8 Apr 22  2024 sbin -> usr/sbin
 drwxr-xr-x  2 root root  4096 Apr  8  2024 sbin.usr-is-merged
 drwxr-xr-x  2 root root  4096 Oct 24 16:05 srv
-dr-xr-xr-x 12 root root     0 Nov 11 03:05 sys
+dr-xr-xr-x 12 root root     0 Nov 12 12:34 sys
 drwxrwxrwt 10 root root  4096 Nov 12 12:34 tmp
 drwxr-xr-x 12 root root  4096 Oct 24 16:05 usr
 drwxr-xr-x 11 root root  4096 Oct 24 16:12 var
