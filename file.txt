@@ -1,0 +1,35 @@
+root
+uid=0(root) gid=0(root) groups=0(root)
+total 12
+drwxr-xr-x  3 root root 4096 Nov 12 11:08 .
+drwx------ 17 root root 4096 Nov 12 11:08 ..
+drwxr-xr-x  3 root root 4096 Nov 12 12:34 fonts
+total 92
+drwxr-xr-x 23 root root  4096 Nov 12 12:34 .
+drwxr-xr-x 23 root root  4096 Nov 12 12:34 ..
+lrwxrwxrwx  1 root root     7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x  2 root root  4096 Apr  8  2024 bin.usr-is-merged
+drwxr-xr-x  2 root root  4096 Apr 22  2024 boot
+-rw-r--r--  1 root root    83 Nov 12 12:34 container_info.json
+drwxr-xr-x  6 root root  2280 Nov 12 12:34 dev
+drwxr-xr-x 88 root root  4096 Nov 12 10:47 etc
+drwxr-xr-x  4 root root  4096 Nov  6 07:05 home
+lrwxrwxrwx  1 root root     7 Apr 22  2024 lib -> usr/lib
+drwxr-xr-x  2 root root  4096 Nov 14  2024 lib.usr-is-merged
+lrwxrwxrwx  1 root root     9 Apr 22  2024 lib64 -> usr/lib64
+drwx------  2 root root 12288 Nov  9 23:05 lost+found
+drwxr-xr-x  2 root root  4096 Oct 24 16:05 media
+drwxr-xr-x  6 root root  4096 Nov 12 10:47 mnt
+drwxr-xr-x  4 root root  4096 Nov  6 07:04 nix
+drwxr-xr-x  2 root root  4096 Nov 12 10:47 old_root
+drwxr-xr-x 25 root root  4096 Nov 12 10:47 opt
+dr-xr-xr-x 77 root root     0 Nov 11 03:05 proc
+drwx------ 17 root root  4096 Nov 12 11:08 root
+drwxr-xr-x 12 root root  4096 Nov 12 10:47 run
+lrwxrwxrwx  1 root root     8 Apr 22  2024 sbin -> usr/sbin
+drwxr-xr-x  2 root root  4096 Apr  8  2024 sbin.usr-is-merged
+drwxr-xr-x  2 root root  4096 Oct 24 16:05 srv
+dr-xr-xr-x 12 root root     0 Nov 11 03:05 sys
+drwxrwxrwt 10 root root  4096 Nov 12 12:34 tmp
+drwxr-xr-x 12 root root  4096 Oct 24 16:05 usr
+drwxr-xr-x 11 root root  4096 Oct 24 16:12 var
