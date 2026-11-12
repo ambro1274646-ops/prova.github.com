@@ -1,1 +1,1 @@
-ip neigh show
+whoami
