@@ -1,1 +1,1 @@
-kill 1951
+ip route
