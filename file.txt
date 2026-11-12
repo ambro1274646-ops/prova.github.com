@@ -1,12 +1,1 @@
-Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
-Reading package lists...
-Reading package lists...
-Building dependency tree...
-Reading state information...
-iproute2 is already the newest version (6.1.0-1ubuntu6.4).
-traceroute is already the newest version (1:2.1.5-1).
-nmap is already the newest version (7.94+git20230807.3be01efb1+dfsg-3build2).
-0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+
