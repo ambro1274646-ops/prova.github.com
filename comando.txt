@@ -1,1 +1,1 @@
-sudo apt update; sudo apt install iproute2
+ip neigh show
