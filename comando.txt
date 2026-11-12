@@ -1,1 +1,1 @@
-uname -a
+ls -la; cd ..; ls -la; env
