@@ -1,1 +1,1 @@
-whoami; ls
+sudo apt-get update -y; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y iproute2 traceroute nmap
