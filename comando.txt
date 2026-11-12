@@ -1,1 +1,1 @@
-ip route
+pwd
