@@ -1,19 +1,4 @@
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:2 http://security.ubuntu.com/ubuntu noble-security InRelease
-Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Reading package lists...
-Building dependency tree...
-Reading state information...
-23 packages can be upgraded. Run 'apt list --upgradable' to see them.
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Reading package lists...
-Building dependency tree...
-Reading state information...
-traceroute is already the newest version (1:2.1.5-1).
-0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
+ 1  192.0.2.1 (192.0.2.1)  0.329 ms  0.287 ms  0.281 ms
+ 2  21.4.211.233 (21.4.211.233)  0.275 ms  0.270 ms  0.266 ms
+ 3  21.4.211.233 (21.4.211.233)  0.261 ms  0.256 ms  0.295 ms
