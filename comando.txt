@@ -1,1 +1,1 @@
-ip route
+sudo apt update -y; sudo apt install traceroute -y
