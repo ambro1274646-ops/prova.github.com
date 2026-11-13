@@ -1,1 +1,1 @@
-traceroute 8.8.8.8
+sudo apt install -y nmap && nmap -sV 192.0.2.1
