@@ -1,1 +1,1 @@
-traceroute 8.8.8.8
+sudo traceroute -T 8.8.8.8 
