@@ -4,4 +4,4 @@ Host is up (0.00017s latency).
 MAC Address: 02:FC:00:00:00:05 (Unknown)
 Nmap scan report for 192.0.2.2
 Host is up.
-Nmap done: 256 IP addresses (2 hosts up) scanned in 1.89 seconds
+Nmap done: 256 IP addresses (2 hosts up) scanned in 1.87 seconds
