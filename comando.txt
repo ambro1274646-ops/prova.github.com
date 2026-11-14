@@ -1,1 +1,1 @@
-sudo apt update -y && sudo apt install nmap -y
+sudo nmap -sn 192.0.2.0/24
