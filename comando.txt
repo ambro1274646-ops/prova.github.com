@@ -1,1 +1,1 @@
-sudo traceroute -T 8.8.8.8 
+nmap -p- -sVC -Pn -vv -T5 21.4.117.143
