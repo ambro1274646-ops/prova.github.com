@@ -1,8 +1,4 @@
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Reading package lists...
-Building dependency tree...
-Reading state information...
-traceroute is already the newest version (1:2.1.5-1).
-0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
+ 1  192.0.2.1 (192.0.2.1)  0.303 ms  0.257 ms  0.250 ms
+ 2  21.4.117.143 (21.4.117.143)  0.244 ms  0.238 ms  0.232 ms
+ 3  21.4.117.143 (21.4.117.143)  0.226 ms  0.220 ms  0.236 ms
