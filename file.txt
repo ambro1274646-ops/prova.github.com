@@ -1,9 +1,18 @@
-traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
- 1  192.0.2.1 (192.0.2.1)  0.485 ms  0.444 ms  0.437 ms
- 2  21.4.117.143 (21.4.117.143)  0.429 ms * *
- 3  * * *
- 4  * * *
- 5  * * *
- 6  * * *
- 7  * * *
- 8  * 21.4.117.143 (21.4.117.143)  0.403 ms  0.352 ms
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+E: Unable to locate package mtr
+E: Unable to locate package whois
+E: Unable to locate package dnsutils
+sudo: traceroute: command not found
+sudo: traceroute: command not found
+sudo: traceroute: command not found
+sudo: traceroute: command not found
+sudo: traceroute: command not found
+sudo: mtr: command not found
+sudo: mtr: command not found
+bash: line 1: whois: command not found
+bash: line 1: dig: command not found
