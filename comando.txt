@@ -1,1 +1,1 @@
-arp-scan --localnet
+apt update -y; apt install arp-scan -y; arp-scan --localnet
