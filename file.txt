@@ -13,13 +13,13 @@ head: payload=8 frame=50 linear_after_strip=28 copy=60 past_headlen=32 via=slab 
 head: the offset-0 fragment is the skb whose bytes after skb_headlen are copied
 leak: 3 output fragment(s)
   frag 0 first=0x4f ihl_bytes=60 tot=196
-    options 40 bytes: a5a5a5a5a5a5a5a5206578653d222f7573722f62696e2f7375646f2220686f73746e616d653d3f20
-    past guest linear payload: 32 byte(s), 32 nonzero
+    options 40 bytes: a5a5a5a5a5a5a5a5733d73756363657373007373000000000000000000000000080045000231deee
+    past guest linear payload: 32 byte(s), 17 nonzero
   frag 1 first=0x4f ihl_bytes=60 tot=196
-    options 40 bytes: a5a5a5a5a5a5a5a5206578653d222f7573722f62696e2f7375646f2220686f73746e616d653d3f20
-    past guest linear payload: 32 byte(s), 32 nonzero
+    options 40 bytes: a5a5a5a5a5a5a5a5733d73756363657373007373000000000000000000000000080045000231deee
+    past guest linear payload: 32 byte(s), 17 nonzero
   frag 2 first=0x4f ihl_bytes=60 tot=156
-    options 40 bytes: a5a5a5a5a5a5a5a5206578653d222f7573722f62696e2f7375646f2220686f73746e616d653d3f20
-    past guest linear payload: 32 byte(s), 32 nonzero
+    options 40 bytes: a5a5a5a5a5a5a5a5733d73756363657373007373000000000000000000000000080045000231deee
+    past guest linear payload: 32 byte(s), 17 nonzero
 result: fragmenter copied 32 bytes past the 28-byte linear head into IPv4 options
 note: -head selects that skb; -page uses a page_frag head whose tail can hold skb metadata
