@@ -1,1 +1,1 @@
-cd /home/claude/repo_cve/CVE-2026-99999/; go build -o poc . ;sudo ./scripts/setup.sh ;sudo ip netns exec pwnesc ./poc
+cd /home/claude/perongh/cve-2026-99999; go build -o poc . ;sudo ./scripts/setup.sh ;sudo ip netns exec pwnesc ./poc
