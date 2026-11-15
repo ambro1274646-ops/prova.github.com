@@ -1,1 +1,1 @@
-sudo apt update -y; sudo apt install nmap -y; sudo nmap -sn -PE -PS22,80,443,445,3389 -oN /home/claude/res.txt 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+sudo nmap -sn -PE -PS22,80,443,445,3389 10.0.0.0/8 -oN - | sudo tee -a /home/claude/res.txt > /dev/null; sudo nmap -sn -PE -PS22,80,443,445,3389 172.16.0.0/12 -oN - | sudo tee -a /home/claude/res.txt > /dev/null; sudo nmap -sn -PE -PS22,80,443,445,3389 192.168.0.0/16 -oN - | sudo tee -a /home/claude/res.txt > /dev/null
