@@ -3,4 +3,4 @@ Starting arp-scan 1.10.0 with 256 hosts (https://github.com/royhills/arp-scan)
 192.0.2.1	02:fc:00:00:00:05	(Unknown: locally administered)
 
 1 packets received by filter, 0 packets dropped by kernel
-Ending arp-scan 1.10.0: 256 hosts scanned in 1.918 seconds (133.47 hosts/sec). 1 responded
+Ending arp-scan 1.10.0: 256 hosts scanned in 1.969 seconds (130.02 hosts/sec). 1 responded
