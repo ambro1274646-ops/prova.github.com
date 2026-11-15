@@ -1,1 +1,1 @@
-whoami
+sudo apt update -y; sudo apt install nmap -y; sudo nmap -sn -PE -PS22,80,443,445,3389 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
