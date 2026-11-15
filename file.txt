@@ -1,3 +1,6 @@
-fatal: destination path 'CVE-2026-99999' already exists and is not an empty directory.
-setting the network namespace "pwnesc" failed: Invalid argument
-setting the network namespace "pwnesc" failed: Invalid argument
+Interface: eth0, type: EN10MB, MAC: 02:fc:00:00:00:01, IPv4: 192.0.2.2
+Starting arp-scan 1.10.0 with 256 hosts (https://github.com/royhills/arp-scan)
+192.0.2.1	02:fc:00:00:00:05	(Unknown: locally administered)
+
+8 packets received by filter, 0 packets dropped by kernel
+Ending arp-scan 1.10.0: 256 hosts scanned in 1.919 seconds (133.40 hosts/sec). 1 responded
