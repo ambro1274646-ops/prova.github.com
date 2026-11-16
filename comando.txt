@@ -1,1 +1,1 @@
-rustup toolchain install nightly --component rust-src llvm-tools-preview && cargo install cargo-fuzz --locked
+. "$HOME/.cargo/env"
