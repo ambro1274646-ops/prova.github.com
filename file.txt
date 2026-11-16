@@ -1,23 +1,2 @@
-bash: line 1: https://github.com/PeronGH/CVE-2026-99999.git: No such file or directory
-bash: line 1: cd: CVE-2026-99999: No such file or directory
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Hit:1 http://security.ubuntu.com/ubuntu noble-security InRelease
-Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Reading package lists...
-Building dependency tree...
-Reading state information...
-23 packages can be upgraded. Run 'apt list --upgradable' to see them.
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Reading package lists...
-Building dependency tree...
-Reading state information...
-golang-go is already the newest version (2:1.22~2build1).
-0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
-go: go.mod file not found in current directory or any parent directory; see 'go help modules'
-sudo: ./scripts/setup.sh: command not found
+bash: line 1: cd: /home/claude/CVE-2026-99999: No such file or directory
+sudo: ip: command not found
