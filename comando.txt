@@ -1,3 +1,1 @@
-cd /home/claude; https://github.com/PeronGH/CVE-2026-99999.git; cd CVE-2026-99999; sudo apt update -y; sudo apt install -y golang-go; go build -o poc . ; sudo ./scripts/setup.sh 
-
-
+cd /home/claude/CVE-2026-99999  ; sudo ip netns exec pwnesc ./poc
