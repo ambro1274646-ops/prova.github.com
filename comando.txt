@@ -1,1 +1,1 @@
-cd /home/claude/CVE-2026-99999  ; sudo ip netns exec pwnesc ./poc
+cd /home/claude/prova.github.com ; gcc -O2 -Wall -Wextra -o calc Calcolatore2.c; chmod +x calc; ./calc
