@@ -1,1 +1,3 @@
-bash: line 1: calc: command not found
+[*] iface eth0 mtu=1400, payload coda=1360 B, 2 frammenti di coda
+[+] frag id=0x1337: 2 frammenti di coda (1360 B payload ciascuno) + frag1 driftato (csum_start=22, csum_offset=0)
+    atteso in egress host: iph[0] 0x45 -> 0x4f e 32 B di 'IP options' non-0x41 (disclosure host)
