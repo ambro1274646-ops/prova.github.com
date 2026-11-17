@@ -189,8 +189,8 @@ int main(int argc, char **argv) {
     uint16_t csum_start = argc > 5 ? (uint16_t)atoi(argv[5]) : 22;
     uint16_t csum_off   = argc > 6 ? (uint16_t)atoi(argv[6]) : 0;
 
-    uint8_t dhost[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x02 };  /* MAC gw/egress: VERIFICARE con ip neigh */
-    uint8_t shost[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x05 };  /* MAC guest */
+    uint8_t dhost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x05 };  /* MAC gw (192.0.2.1, da ARP) */
+    uint8_t shost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x01 };  /* MAC eth0 (verificato) */
     uint8_t p1[8]    = { 0xde, 0xad, 0xbe, 0xef, 0x00, 0x00, 0xde, 0xad };
 
     int mtu = iface_mtu(ifname);
