@@ -1,1 +1,1 @@
-send frag2: Message too long
+bash: line 1: calc: command not found
