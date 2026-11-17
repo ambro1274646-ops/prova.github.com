@@ -1,24 +1,17 @@
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Hit:1 http://security.ubuntu.com/ubuntu noble-security InRelease
-Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Reading package lists...
-Building dependency tree...
-Reading state information...
-21 packages can be upgraded. Run 'apt list --upgradable' to see them.
-
-WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
-
-Reading package lists...
-Building dependency tree...
-Reading state information...
-gcc is already the newest version (4:13.2.0-7ubuntu1).
-libc6-dev is already the newest version (2.39-0ubuntu8.12).
-linux-libc-dev is already the newest version (6.8.0-149.149).
-0 upgraded, 0 newly installed, 0 to remove and 21 not upgraded.
-[*] iface eth0 mtu=1400, payload coda=1360 B, 2 frammenti di coda
-[+] frag id=0x1337: 2 frammenti di coda (1360 B payload ciascuno) + frag1 driftato (csum_start=22, csum_offset=0)
-    atteso in egress host: iph[0] 0x45 -> 0x4f e 32 B di 'IP options' non-0x41 (disclosure host)
+rm: cannot remove 'calc': No such file or directory
+In file included from Calcolatore2.c:22:
+/usr/include/linux/if_packet.h:14:8: error: redefinition of 'struct sockaddr_ll'
+   14 | struct sockaddr_ll {
+      |        ^~~~~~~~~~~
+In file included from Calcolatore2.c:17:
+/usr/include/netpacket/packet.h:22:8: note: originally defined here
+   22 | struct sockaddr_ll
+      |        ^~~~~~~~~~~
+/usr/include/linux/if_packet.h:296:8: error: redefinition of 'struct packet_mreq'
+  296 | struct packet_mreq {
+      |        ^~~~~~~~~~~
+/usr/include/netpacket/packet.h:69:8: note: originally defined here
+   69 | struct packet_mreq
+      |        ^~~~~~~~~~~
+chmod: cannot access 'calc': No such file or directory
+bash: line 1: ./calc: No such file or directory
