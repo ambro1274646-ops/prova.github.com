@@ -2,13 +2,9 @@
 WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
 
 Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
-Hit:2 http://security.ubuntu.com/ubuntu noble-security InRelease
-Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
-Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1799 kB]
-Get:6 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2329 kB]
-Get:7 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2182 kB]
-Fetched 6437 kB in 2s (3634 kB/s)
+Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
 Reading package lists...
 Building dependency tree...
 Reading state information...
