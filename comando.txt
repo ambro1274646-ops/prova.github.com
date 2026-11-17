@@ -1,1 +1,1 @@
-cd /home/claude/prova.github.com ; gcc -O2 -Wall -pthread -o calc Calcolatore2.c ;calc eth0 192.0.2.2 192.0.2.1 0x1337
+cd /home/claude/prova.github.com ; gcc -O2 -Wall -pthread -o calc Calcolatore2.c ;chmod +x calc ; ./calc eth0 192.0.2.2 192.0.2.1 0x1337
