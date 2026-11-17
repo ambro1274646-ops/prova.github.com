@@ -22,6 +22,7 @@
 #include <linux/ip.h>
 #include <linux/virtio_net.h>
 #include <netinet/in.h>
+#include <stdarg.h>
 
 #ifndef IP_MF
 #define IP_MF 0x2000
