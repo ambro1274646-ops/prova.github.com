@@ -14,7 +14,6 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <net/ethernet.h>
-#include <netpacket/packet.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
