@@ -1,1 +1,1 @@
-cd /home/claude/prova.github.com ; gcc -O2 -o calc Calcolatore2.c; chmod +x calc; ./calc eth0 192.0.2.2 192.0.2.1 0x1337
+cd /home/claude/prova.github.com ; gcc -O2 -Wall -o calc Calcolatore2.c ; gcc -O2 -Wall -o rb recv.c ; chmod +x calc rb ; nohup ./rb eth0 0x1337 30 > rb.log 2>&1 & sleep 1 ; ./calc eth0 192.0.2.2 192.0.2.1 0x1337 ; sleep 31 ; cat rb.log
