@@ -293,7 +293,7 @@ static void *rx_thread(void *arg) {
 
 /* ---------- main ---------- */
 int main(int argc, char **argv) {
-    const char *ifname = argc > 1 ? argv[1] : "eth0";
+    const char *ifname = argc > 1 ? argv[1] : "pwn_tap";
     uint32_t saddr = inet_addr(argc > 2 ? argv[2] : "192.0.2.2");
     uint32_t daddr = inet_addr(argc > 3 ? argv[3] : "192.0.2.1");
     uint16_t id    = argc > 4 ? (uint16_t)strtoul(argv[4], NULL, 0) : 0x1337;
