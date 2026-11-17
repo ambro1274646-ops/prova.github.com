@@ -1,30 +1,14 @@
 
 WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
 
-Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-Get:2 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
-Get:3 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1472 kB]
-Get:4 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-Get:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
-Get:6 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
-Get:7 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2211 kB]
-Get:8 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
-Get:9 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [55.6 kB]
-Get:10 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1558 kB]
-Get:11 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
-Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
-Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1799 kB]
-Get:14 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2182 kB]
-Get:15 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2329 kB]
-Get:16 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [61.7 kB]
-Get:17 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [36.0 kB]
-Get:18 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [669 B]
-Get:19 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.0 kB]
-Fetched 34.0 MB in 3s (10.8 MB/s)
+Hit:1 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
 Reading package lists...
 Building dependency tree...
 Reading state information...
-28 packages can be upgraded. Run 'apt list --upgradable' to see them.
+21 packages can be upgraded. Run 'apt list --upgradable' to see them.
 
 WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
 
@@ -32,73 +16,29 @@ Reading package lists...
 Building dependency tree...
 Reading state information...
 gcc is already the newest version (4:13.2.0-7ubuntu1).
-The following additional packages will be installed:
-  libc-bin libc-dev-bin libc6 libc6-dbg locales
-Suggested packages:
-  manpages glibc-doc libnss-nis libnss-nisplus manpages-dev
-Recommended packages:
-  manpages manpages-dev libc-devtools
-The following packages will be upgraded:
-  libc-bin libc-dev-bin libc6 libc6-dbg libc6-dev linux-libc-dev locales
-7 upgraded, 0 newly installed, 0 to remove and 21 not upgraded.
-Need to get 19.5 MB of archives.
-After this operation, 141 kB of additional disk space will be used.
-Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc6-dbg amd64 2.39-0ubuntu8.12 [7453 kB]
-Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc6-dev amd64 2.39-0ubuntu8.12 [2125 kB]
-Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc-dev-bin amd64 2.39-0ubuntu8.12 [20.4 kB]
-Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 linux-libc-dev amd64 6.8.0-149.149 [1699 kB]
-Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc6 amd64 2.39-0ubuntu8.12 [3264 kB]
-Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libc-bin amd64 2.39-0ubuntu8.12 [682 kB]
-Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 locales all 2.39-0ubuntu8.12 [4232 kB]
-debconf: delaying package configuration, since apt-utils is not installed
-Fetched 19.5 MB in 1s (29.4 MB/s)
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 87641 files and directories currently installed.)
-Preparing to unpack .../libc6-dbg_2.39-0ubuntu8.12_amd64.deb ...
-Unpacking libc6-dbg:amd64 (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Preparing to unpack .../libc6-dev_2.39-0ubuntu8.12_amd64.deb ...
-Unpacking libc6-dev:amd64 (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Preparing to unpack .../libc-dev-bin_2.39-0ubuntu8.12_amd64.deb ...
-Unpacking libc-dev-bin (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Preparing to unpack .../linux-libc-dev_6.8.0-149.149_amd64.deb ...
-Unpacking linux-libc-dev:amd64 (6.8.0-149.149) over (6.8.0-147.147) ...
-Preparing to unpack .../libc6_2.39-0ubuntu8.12_amd64.deb ...
-Unpacking libc6:amd64 (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Setting up libc6:amd64 (2.39-0ubuntu8.12) ...
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 87651 files and directories currently installed.)
-Preparing to unpack .../libc-bin_2.39-0ubuntu8.12_amd64.deb ...
-Unpacking libc-bin (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Setting up libc-bin (2.39-0ubuntu8.12) ...
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 87651 files and directories currently installed.)
-Preparing to unpack .../locales_2.39-0ubuntu8.12_all.deb ...
-Unpacking locales (2.39-0ubuntu8.12) over (2.39-0ubuntu8.9) ...
-Setting up linux-libc-dev:amd64 (6.8.0-149.149) ...
-Setting up locales (2.39-0ubuntu8.12) ...
-Generating locales (this might take a while)...
-Generation complete.
-Setting up libc6-dbg:amd64 (2.39-0ubuntu8.12) ...
-Setting up libc-dev-bin (2.39-0ubuntu8.12) ...
-Setting up libc6-dev:amd64 (2.39-0ubuntu8.12) ...
-rm: cannot remove 'calc': No such file or directory
-[2026-11-17 18:13:53] === start iface=eth0 mtu=1400 plen=1360 n_tail=2 id=0x1337 csum_start=22 csum_off=0
-[2026-11-17 18:13:53] [diag] iface=eth0 mtu=1400 IFF_VNET_HDR=NO (flags=0x1043)
-[2026-11-17 18:13:53] [diag] ATTENZIONE: IFF_VNET_HDR assente -> PACKET_VNET_HDR non passera' i metadati di checksum
-[2026-11-17 18:13:53] [diag] tuning ok: p1[0]=0x00 p1[1]=0xe3 (frag1 iph[0]=0x45)
-[2026-11-17 18:13:53] [diag] PACKET_VNET_HDR attivato sul socket TX
-[2026-11-17 18:13:53] [diag rx] PACKET_OUTGOING n=1402 (scartato)
-[2026-11-17 18:13:53] [diag rx] PACKET_OUTGOING n=1402 (scartato)
-[2026-11-17 18:13:53] [diag rx] PACKET_OUTGOING n=50 (scartato)
-[2026-11-17 18:13:53] [+] TX completato: 2 tail + frag1 (csum_start=22, csum_offset=0, ret=60); attendo RX 30 s
-[2026-11-17 18:14:01] [diag rx] IPv4 id=0x4ec5 (atteso 0x1337) iph[0]=0x45 len=90 pkttype=0
-[2026-11-17 18:14:01] [diag rx] PACKET_OUTGOING n=94 (scartato)
-[2026-11-17 18:14:01] [diag rx] IPv4 id=0x4ec6 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
-[2026-11-17 18:14:08] [diag rx] PACKET_OUTGOING n=1407 (scartato)
-[2026-11-17 18:14:08] [diag rx] IPv4 id=0x5a25 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
-[2026-11-17 18:14:08] [diag rx] IPv4 id=0x5a26 (atteso 0x1337) iph[0]=0x45 len=429 pkttype=0
-[2026-11-17 18:14:08] [diag rx] PACKET_OUTGOING n=66 (scartato)
-[2026-11-17 18:14:11] [diag rx] PACKET_OUTGOING n=96 (scartato)
-[2026-11-17 18:14:11] [diag rx] IPv4 id=0xeba8 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
-[2026-11-17 18:14:20] [diag rx] IPv4 id=0xeba9 (atteso 0x1337) iph[0]=0x45 len=90 pkttype=0
-[2026-11-17 18:14:20] [diag rx] IPv4 id=0xebaa (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
-[2026-11-17 18:14:20] [diag rx] PACKET_OUTGOING n=90 (scartato)
-[2026-11-17 18:14:20] [diag rx] IPv4 id=0x0000 (atteso 0x1337) iph[0]=0x45 len=54 pkttype=0
-[2026-11-17 18:14:23] [-] VERDETTO: nessun frammento id=0x1337 tornato (bounce/NAT assente o defrag host assente)
+libc6-dev is already the newest version (2.39-0ubuntu8.12).
+linux-libc-dev is already the newest version (6.8.0-149.149).
+0 upgraded, 0 newly installed, 0 to remove and 21 not upgraded.
+[2026-11-17 18:14:35] === start iface=eth0 mtu=1400 plen=1360 n_tail=2 id=0x1337 csum_start=22 csum_off=0
+[2026-11-17 18:14:35] [diag] iface=eth0 mtu=1400 IFF_VNET_HDR=NO (flags=0x1043)
+[2026-11-17 18:14:35] [diag] ATTENZIONE: IFF_VNET_HDR assente -> PACKET_VNET_HDR non passera' i metadati di checksum
+[2026-11-17 18:14:35] [diag] tuning ok: p1[0]=0x00 p1[1]=0xe3 (frag1 iph[0]=0x45)
+[2026-11-17 18:14:35] [diag] PACKET_VNET_HDR attivato sul socket TX
+[2026-11-17 18:14:35] [diag rx] PACKET_OUTGOING n=1402 (scartato)
+[2026-11-17 18:14:35] [diag rx] PACKET_OUTGOING n=1402 (scartato)
+[2026-11-17 18:14:35] [+] TX completato: 2 tail + frag1 (csum_start=22, csum_offset=0, ret=60); attendo RX 30 s
+[2026-11-17 18:14:35] [diag rx] PACKET_OUTGOING n=50 (scartato)
+[2026-11-17 18:14:38] [diag rx] PACKET_OUTGOING n=66 (scartato)
+[2026-11-17 18:14:38] [diag rx] IPv4 id=0xded9 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
+[2026-11-17 18:14:41] [diag rx] IPv4 id=0x4ecb (atteso 0x1337) iph[0]=0x45 len=90 pkttype=0
+[2026-11-17 18:14:41] [diag rx] PACKET_OUTGOING n=66 (scartato)
+[2026-11-17 18:14:41] [diag rx] PACKET_OUTGOING n=94 (scartato)
+[2026-11-17 18:14:41] [diag rx] IPv4 id=0x4ecc (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
+[2026-11-17 18:14:43] [diag rx] PACKET_OUTGOING n=66 (scartato)
+[2026-11-17 18:14:43] [diag rx] IPv4 id=0x5a27 (atteso 0x1337) iph[0]=0x45 len=90 pkttype=0
+[2026-11-17 18:14:43] [diag rx] IPv4 id=0x5a28 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
+[2026-11-17 18:14:43] [diag rx] PACKET_OUTGOING n=54 (scartato)
+[2026-11-17 18:14:51] [diag rx] IPv4 id=0x4ecd (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
+[2026-11-17 18:14:51] [diag rx] IPv4 id=0x4ece (atteso 0x1337) iph[0]=0x45 len=96 pkttype=0
+[2026-11-17 18:14:53] [diag rx] IPv4 id=0xfae9 (atteso 0x1337) iph[0]=0x45 len=66 pkttype=0
+[2026-11-17 18:15:08] [-] VERDETTO: nessun frammento id=0x1337 tornato (bounce/NAT assente o defrag host assente)
